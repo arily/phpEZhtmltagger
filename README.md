@@ -100,38 +100,49 @@ let's use another example:
 	
 	yes you got it. an array().
 ```php
-$body =
+$body = 
 [
-	[
-	//  'h1'=>'YES! easy html tagger using php!' <- this' wrong. you need to wtire like
-	//this v
-		'h1'=>[
-			'inside'=>'YES! easy html tagger using php!(It\'s that f()king easy?????????'
-		],
-		'div'=>[
-			'id'=>'hi_i_am_div',
-		'inside'=>[
-				//instead of duplicate h2 keys like this: 
-				//'h2'=>[
-				//	'id'=>'heading_2_inside_a_div!',
-				//	'inside'=>'I\'m h2 inside the fatty div '.str_repeat('that in a array ',5).'.'
-				//]
-				## you put every of them in a different array:
-				[
-					'h2'=>[
-						'id'=>'heading_2_inside_a_div!',
-						'inside'=>'I\'m h2 inside the fatty div '.str_repeat('that in a array ',6).'.'
-				]
-					'h2'=>[
-						'id'=>'heading_2_inside_a_div_num_2!',
-						'inside'=>'I\'m another h2 inside the fatty div '.str_repeat('that in a array ',6).'.'
-				[
-				
-				]
-			]
-		]
-	]
+    [
+        'h1'=>[
+            'inside'=>'YES! easy html tagger using php!(It\'s that f()king easy?????????'
+        ],
+        'div'=>[
+            'id'=>'hi_i_am_div',
+        'inside'=>
+            [
+                [
+                    'h2'=>[
+                        'id'=>'heading_2_inside_a_div!',
+                        'inside'=>'I\'m h2 inside the fatty div '.str_repeat('that in a array ',6).'.'
+                    ]
+                ],
+                [
+                    'h2'=>[
+                        'id'=>'heading_2_inside_a_div_num_2!',
+                        'inside'=>'I\'m another h2 inside the fatty div '.str_repeat('that in a array ',6).'.'
+                    ]
+                ]
+            ]
+        ]
+    ]
 ];
+```
+this'll output like this:
+```html
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="//resource.arily.moe/resource.main/style/LL.css">
+		<link rel="stylesheet" type="text/css" href="//resource.arily.moe/resource.main/style/top.css">
+		<script type="text/javascript" src="//resource.arily.moe/Chart.js"></script>
+	</head>
+	<body>
+		<h1>YES! easy html tagger using php!(It's that f()king easy?????????</h1>
+		<div id="hi_i_am_div">
+			<h2 id="heading_2_inside_a_div!">I'm h2 inside the fatty div that in a array that in a array that in a array that in a array that in a array that in a array .</h2>
+			<h2 id="heading_2_inside_a_div_num_2!">I'm another h2 inside the fatty div that in a array that in a array that in a array that in a array that in a array that in a array .</h2>
+		</div>
+	</body>
+</html>
 ```
 
 ## wow! how can I change my ugly arrays into sth. like this?
