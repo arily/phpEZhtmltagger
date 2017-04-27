@@ -188,5 +188,5 @@ $html->setHead($head)->setBody($body)->setTitle('wowTitle')->prn();	//A cool cha
 ## of course you can write them in single line. but the print method must be last one.
 $html->redis()->setHead($head)->setBody($body)->setTitle('wowTitle')->prn();
 ```
-![][QQ]
+![final](https://github.com/arily/phpEZhtmltagger/blob/master/QQ20170427-195857.png)
 # That's it. You are well on your way to write clear html tags without type any < and > ~
