@@ -9,7 +9,7 @@ a GREAT WAY to write your HTML tags forced you write ABSOLUTELY formated.
 and save it to your redis server if u want.
 
 # OK, I want to try this sh*tty no-using buggy tagger so what I need to do? 
-you can check the html.php. just MIND BLOWING easy.
+you can check the example.php. just MIND BLOWING easy.
 ## first let's write some fatty array!
 ```php
 <?php #of coures you need it
