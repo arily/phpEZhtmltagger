@@ -19,6 +19,7 @@ class htmltagger {
 		];
 		return $this;
 	}
+	//set html <title>
 	public function setTitle(string $title) {
 		$this->head = array_merge_recursive($this->head, array(
 			'title'	=> htmlspecialchars($title)
@@ -26,6 +27,7 @@ class htmltagger {
 		);
 		return $this;
 	}
+	//set html <head>
 	public function setHead(array $head) {
 		if (is_array($head)) {
 			$this->head = array_merge_recursive($this->head, $head);
@@ -36,6 +38,7 @@ class htmltagger {
 		}
 		return $this;
 	}
+	//set html <body>
 	public function setBody(array $body) {
 		if (is_array($body)) {
 			$this->body = array_merge_recursive($this->body, $body);
@@ -45,15 +48,17 @@ class htmltagger {
 		}
 		return $this;
 	}
-
+	//get htmlized <head>
 	public function getHeadHtml() {
 		$head	= new head($this->head);
 		return $head->trn();
 	}
+	//get htmlized <body>
 	public function getBodyHtml() {
 		$body 	= new body($this->body);
 		return $body->rtn();
 	}
+	//print html tags
 	public function prn() {
 		$head_html    = FALSE;
 		$body_html    = FALSE;
@@ -91,23 +96,21 @@ class htmltagger {
 		echo '</html>';
 		return 0;
 	}
-
 	public function setTop($id, $class, $style, $top) {
 	}
 	public function setString($member, $data) {
 		if (!is_string($this->$member)) {
-			echo ($this->errCatcher('Abort', __METHOD__,
-				      'setting a NON-String member', __LINE__));
+			echo ($this->errCatcher('Abort', __METHOD__, 'setting a NON-String member', __LINE__));
 			return FALSE;
 		}
 		if (!is_string($data)) {
-			echo ($this->errCatcher('Abort', __METHOD__,
-					  'parameter is not string', __LINE__));
+			echo ($this->errCatcher('Abort', __METHOD__, 'parameter is not string', __LINE__));
 			return FALSE;
 		}
 		$this->$member = $data;
 		return TRUE;
 	}
+	//shrink the unused tags
 	protected function shrink($member) {
 		$member = $this->$member();
 		if (!isset($this->$member)) {
@@ -187,7 +190,6 @@ class body extends htmltagger {
 		}
 		$this->html .= "\t</body>\n";
 	}
-
 	public function prn() {
 		echo $this->html;
 		return 0;
@@ -202,7 +204,6 @@ class body extends htmltagger {
 		if (isset($data['inside'])) {
 			unset($data['inside']);
 		}
-
 		//prepare the array to return
 		$convert = array();
 		//Converting is just fucking easy. Cause html tag's just fucking easy to do.
@@ -224,52 +225,57 @@ class body extends htmltagger {
 		//recover arguments
 		$data   = $arguments['0'];
 		$offset = $arguments['1'];
+		//is $data an array or a string?
+		$dataType = is_string($data) ? 's' : 'a' ;
 		//format the html tag
 		$this->html .= str_repeat("\t", $offset);
-		//convert array setting-arguments to html tag's parameters
-		$return = $this->exchange($data);
 		//open a html tag
 		$this->html .= "<$type";
-		//pring all parameters
-		foreach ($return as $config) {
-			$this->html .= $config;
+		//convert array setting-arguments to html tag's parameters @ADD 0127-04-27 if it's array
+		if ($dataType == 'a') {
+			$return = $this->exchange($data);
+			//print all parameters
+			foreach ($return as $config) {
+				$this->html .= $config;
+			}
 		}
-
 		//close prefix
 		$this->html .= '>';
-		//get what in the tag that just opened
-		$inside = $data['inside'];
-		//if it's an array, re-call an function to keep phrasing html tags
-		if (is_array($inside)) {
-			//we admire if there's only on array in the $inside. we use another array inside there to avoid
-			//if you want two tag that's uses one name.
-			if (!isset($inside[0])) {
-				foreach ($inside as $k => $s) {
-					$this->html .= "\n";
-					$this->$k($s, $offset + 1);
-				}
-			}
-			//if it comes' with more array.
-			else {
-				foreach ($inside as $i) {
-					foreach ($i as $k => $s) {
+		//ADD 2017-04-27 if you want only
+		if ($dataType == 's') {
+			$this->html .= "$data</$type>";
+		} else {
+			//get what in the tag that just opened
+			$inside = $data['inside'];
+			//if it's an array, re-call an function to keep phrasing html tags
+			if (is_array($inside)) {
+				//we admire if there's only on array in the $inside. we use another array inside there to avoid
+				//if you want two tag that's uses one name.
+				if (!isset($inside[0])) {
+					foreach ($inside as $k => $s) {
 						$this->html .= "\n";
 						$this->$k($s, $offset + 1);
 					}
+				} //if it comes' with more array.
+				else {
+					foreach ($inside as $i) {
+						foreach ($i as $k => $s) {
+							$this->html .= "\n";
+							$this->$k($s, $offset + 1);
+						}
+					}
 				}
+				//finish the tag
+				$this->html .= "\n" . str_repeat("\t", $offset) . "</$type>";
 			}
-			//finish the tag
-			$this->html .= "\n" . str_repeat("\t", $offset) . "</$type>";
-		}
-		//if what we want inside the tag is a string, just print it.
-		else if (is_string($inside)) {
-			$this->html .= "$inside</$type>";
-		}
-
-		//or we don't know how to do with the data, so print it out.
-		else {
-			$this->errCatcher('Error', __METHOD__,
-				   'No suitable parameters\' type', __LINE__-8);
+			//if what we want inside the tag is a string, just print it.
+			else if (is_string($inside)) {
+				$this->html .= "$inside</$type>";
+			}
+			//or we don't know how to do with the data, so print it out.
+			else {
+				$this->errCatcher('Error', __METHOD__, 'No suitable parameters\' type', __LINE__-8);
+			}
 		}
 	}
 }
