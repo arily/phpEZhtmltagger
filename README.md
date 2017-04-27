@@ -1,6 +1,28 @@
 # phpEZhtmltagger
 A F**KING EASY WAY TO WRITE HTML TAGS
 
+# changelog
+0.0.1 body - update: when there's nothing more than 'inside' you can simply write direct to array:
+```php
+$body=[
+	[
+		'h1'=>[
+			'inside'=>'wowHeading'
+		],
+		//...
+	]
+]
+```
+can like:
+```php
+$body=[
+	[
+		'h1'=>'wowHeading'
+		//...
+	]
+]
+```
+
 # How to use it 
 include './class.php'
 
@@ -48,12 +70,16 @@ $body =
 ##      what inside the tag uses key 'inside',
 #       'h1'=>array('id'=>'','inside'=>,
 //      what inside the 'inside' can be array(s) for containing sth also.
-#//
-/**     'div'=>array('id'=>'','inside'=>array('h1'=>
+#/	like 'div'=>array('id'=>'','inside'=>array('h1'=>... 
+//
+#//	with new version, if you just want inside but not any other arguments,
+##/	it can be simply write like 'h1'=>'wowHeading';
+#/#	
+/**     
 */
 [
 	[
-	//  'h1'=>'YES! easy html tagger using php!' <- this' wrong. you need to wtire like
+		'h1'=>'YES! easy html tagger using php!' //<- this' not wrong in new version. or you need to wtire like
 	//this v
 		'h1'=>[
 			'inside'=>'YES! easy html tagger using php!(It\'s that f()king easy?????????'
