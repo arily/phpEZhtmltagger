@@ -17,6 +17,7 @@ class htmltagger {
 			'port'        => $port,
 			'expire_time' => $exp
 		];
+		return $this;
 	}
 	public function setTitle(string $title) {
 		$this->head = array_merge_recursive($this->head, array(
@@ -67,6 +68,7 @@ class htmltagger {
 			$head_html = $redis->hGet('htmltagger', $head_md5);
 			$body_html = $redis->hGet('htmltagger', $body_md5);
 		}
+		echo "<html>\n";
 		if (!$head_html) {
 			$head = new head($this->head);
 			if ($redis_enable) {
@@ -86,6 +88,7 @@ class htmltagger {
 		} else {
 			echo $body_html;
 		}
+		echo '</html>';
 		return 0;
 	}
 
@@ -126,13 +129,13 @@ class htmltagger {
 class head extends htmltagger {
 	protected $html = '';
 	public function __construct($head) {
-		$this->html .= "<head>\n";
+		$this->html .= "\t<head>\n";
 		foreach ($head as $k => $s) {
-			$this->html .= "\t";
+			$this->html .= "\t\t";
 			$this->$k($s);
 			$this->html .= "\n";
 		}
-		$this->html .= "</head>\n";
+		$this->html .= "\t</head>\n";
 	}
 	public function title($title) {
 		$this->html .= "<title>$title</title>";
@@ -151,7 +154,7 @@ class head extends htmltagger {
 		for ($i = 0; $i < $length; $i++) {
 			$this->html .=
 	     '<link rel="stylesheet" type="text/css" href="' . $css[$i] . '">';
-			$this->html .= $i < ($length - 1) ? "\n\t" : '';
+			$this->html .= $i < ($length - 1) ? "\n\t\t" : '';
 		}
 	}
 	public function prn() {
@@ -172,17 +175,17 @@ class body extends htmltagger {
 	//when a new body object's cerating
 	public function __construct($body) {
 		//all tags need to be placed in <body> so we print it at FUCKING FIRST without anything above it.
-		$this->html .= "<body>\n";
+		$this->html .= "\t<body>\n";
 		//open every array
 		foreach ($body as $inner) {
 			foreach ($inner as $k => $s) {
 				//every thing in <body> are tabing use offset just below
-				//and the first offset is 1 instead of 0 because <body> uses offset 0
-				$this->$k($s, '1');
+				//and the first offset is 2 instead of 1 because <body> uses offset 1 and <html> uses 0
+				$this->$k($s, '2');
 				$this->html .= "\n";
 			}
 		}
-		$this->html .= "</body>\n";
+		$this->html .= "\t</body>\n";
 	}
 
 	public function prn() {
@@ -240,7 +243,7 @@ class body extends htmltagger {
 		if (is_array($inside)) {
 			//we admire if there's only on array in the $inside. we use another array inside there to avoid
 			//if you want two tag that's uses one name.
-			if (!is_array($inside[0])) {
+			if (!isset($inside[0])) {
 				foreach ($inside as $k => $s) {
 					$this->html .= "\n";
 					$this->$k($s, $offset + 1);
