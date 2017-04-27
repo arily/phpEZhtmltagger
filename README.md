@@ -40,8 +40,8 @@ $head = [
 
 $body = 
 #       body's more complicate that you need to put all things in arrays in array.
-#       like array(array('h1'=>. because we always using same tag names but array in php
-/／	don't allow duplicate keys with different containing.
+#       like array(array('h1'=>. because we always using same tag names but array in php
+//	don't allow duplicate keys with different containing.
 #       also keep in mind that every tag you want to specify need a array to tell tagger 
 ##      what it's containing.
 ###     like 'h1'=>array('id'=>'',
