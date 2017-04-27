@@ -111,15 +111,15 @@ $body =
         'inside'=>
             [
                 [
-                    'h2'=>[
-                        'id'=>'heading_2_inside_a_div!',
-                        'inside'=>'I\'m h2 inside the fatty div '.str_repeat('that in a array ',6).'.'
+                    'div'=>[
+                        'id'=>'div_inside_a_div!',
+                        'inside'=>'I\'m div inside the fatty div '.str_repeat('that in a array ',6).'.'
                     ]
                 ],
                 [
-                    'h2'=>[
-                        'id'=>'heading_2_inside_a_div_num_2!',
-                        'inside'=>'I\'m another h2 inside the fatty div '.str_repeat('that in a array ',6).'.'
+                    'div'=>[
+                        'id'=>'div_inside_a_div_num_2!',
+                        'inside'=>'I\'m another div inside the fatty div '.str_repeat('that in a array ',6).'.'
                     ]
                 ]
             ]
@@ -138,8 +138,8 @@ this'll output like this:
 	<body>
 		<h1>YES! easy html tagger using php!(It's that f()king easy?????????</h1>
 		<div id="hi_i_am_div">
-			<h2 id="heading_2_inside_a_div!">I'm h2 inside the fatty div that in a array that in a array that in a array that in a array that in a array that in a array .</h2>
-			<h2 id="heading_2_inside_a_div_num_2!">I'm another h2 inside the fatty div that in a array that in a array that in a array that in a array that in a array that in a array .</h2>
+			<div id="div_inside_a_div!">I'm div inside the fatty div that in a array that in a array that in a array that in a array that in a array that in a array .</div>
+			<div id="div_inside_a_div_num_2!">I'm another div inside the fatty div that in a array that in a array that in a array that in a array that in a array that in a array .</div>
 		</div>
 	</body>
 </html>
