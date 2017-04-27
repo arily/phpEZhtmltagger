@@ -1,7 +1,7 @@
 # phpEZhtmltagger
 A F**KING EASY WAY TO WRITE HTML TAGS
 
-# changelog
+### changelog
 0.0.1 body - update: when there's nothing more than 'inside' you can simply write direct to array:
 ```php
 $body=[
