@@ -5,14 +5,14 @@ A F**KING EASY WAY TO WRITE HTML TAGS
 include './class.php'
 
 # What's it doing? 
-a GREAT WAY to write your HTML tags forced you write ABSOLUTELY formated.
+a GREAT WAY to write your HTML tags forced you write ABSOLUTELY formatted.
 and save it to your redis server if u want.
 
 # OK, I want to try this sh*tty no-using buggy tagger so what I need to do? 
 you can check the example.php. just MIND BLOWING easy.
 ## first let's write some fatty array!
 ```php
-<?php #of coures you need it
+<?php #of course you need it
 
 $head = [
   /* you put css in a array in the 'css',
@@ -26,9 +26,9 @@ $head = [
 		],
     'script' =>
         [
-        // this could be harder for you cause every sigle script needs
+        // this could be harder for you cause every single script needs
         // a specific array to tell tagger what this script is,
-        // and it just copied your input to tag <scrpit type="(here)" src=""></script>
+        // and it just copied your input to tag <script type="(here)" src=""></script>
         // also I forget about location, that'll be put in src label just  ^-here!
             [
                 'type'=>'text/javascript',
@@ -39,15 +39,17 @@ $head = [
 ];
 
 $body = 
-##      body are more complicated that you need to put all things in arrays in array.
-##      like array(array('h1'=>.
-##      also in mind that every tag you want to specify need a array to tell tagger what
-##      it's containing.
-##      like 'h1'=>array('id'=>'',
+#       body's more complicate that you need to put all things in arrays in array.
+#       like array(array('h1'=>. because we always using same tag names but array in php
+/	don't allow duplicate keys with different containing.
+#       also keep in mind that every tag you want to specify need a array to tell tagger 
+##      what it's containing.
+###     like 'h1'=>array('id'=>'',
 ##      what inside the tag uses key 'inside',
-##      'h1'=>array('id'=>'','inside'=>,
-//      what inside the 'inside' can also be an array for containing sth.
-/*      'div'=>array('id'=>'','inside'=>array('h1'=>
+#       'h1'=>array('id'=>'','inside'=>,
+//      what inside the 'inside' can be array(s) for containing sth also.
+#//
+/**     'div'=>array('id'=>'','inside'=>array('h1'=>
 */
 [
 	[
@@ -86,8 +88,54 @@ PHP Notice:  Undefined offset: 0 in /home/webapp/info/easyhtml/class.php on line
 	</body>
 </html>
 ```
+## In html, we use a lot of same tags in one div, how can I solve this?
+That's can be ezzzzzz~ 
+in phpEZhtmltagger all insideing can not only contains one object. 
+instead of keep taping f(())king English that I totally non-undetstandable,
+let's use another example:
+
+	in this case you are going to crate two divs in a main div.
+	that's <div id="main"> <div class="sub"> </div> <div class="sub"> </div> </div>.
+	to crate two obj shares one tag, you can make every one of them into ().
+	
+	yes you got it. an array().
+```php
+$body =
+[
+	[
+	//  'h1'=>'YES! easy html tagger using php!' <- this' wrong. you need to wtire like
+	//this v
+		'h1'=>[
+			'inside'=>'YES! easy html tagger using php!(It\'s that f()king easy?????????'
+		],
+		'div'=>[
+			'id'=>'hi_i_am_div',
+		'inside'=>[
+				//instead of duplicate h2 keys like this: 
+				//'h2'=>[
+				//	'id'=>'heading_2_inside_a_div!',
+				//	'inside'=>'I\'m h2 inside the fatty div '.str_repeat('that in a array ',5).'.'
+				//]
+				## you put every of them in a different array:
+				[
+					'h2'=>[
+						'id'=>'heading_2_inside_a_div!',
+						'inside'=>'I\'m h2 inside the fatty div '.str_repeat('that in a array ',6).'.'
+				]
+					'h2'=>[
+						'id'=>'heading_2_inside_a_div_num_2!',
+						'inside'=>'I\'m another h2 inside the fatty div '.str_repeat('that in a array ',6).'.'
+				[
+				
+				]
+			]
+		]
+	]
+];
+```
+
 ## wow! how can I change my ugly arrays into sth. like this?
-	because there're high dimention arrays above you need to check it carefully at first.
+	because there're high dimension arrays above you need to check it carefully at first.
 our magic:
 ```php
 include './class.php';
