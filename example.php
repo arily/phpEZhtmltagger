@@ -32,11 +32,7 @@ $body =
 				'inside'=>
 					[
 						[
-							'h2'=>
-								[
-									'inside'=>'Sub Title',
-									'id'=>'h2withid'
-								]
+							'h2'=>'why Iub Title',
 						],
 						[
 							'h2'=>
@@ -61,7 +57,7 @@ $body =
 			]
 ];
 
-$body['0']['div']['inside']['0']['h2']['inside'] = 'I\'m changed';
+$body['0']['div']['inside']['0']['h2']= 'I\'m changed';
 
 $html = new htmltagger();
 //$html->redis('localhost');
