@@ -125,8 +125,8 @@ once you finished `designing` your website, this's sth. additional you can let i
 // use redis to cache your website once it's been phrased into html.
 // redis server defaults setting to localhost:6379 and 300 seconds expire time.
 $html->redis($host,$port,$exp_time);	
-$html->setHead($head)->setBody($body)->setTitle('wowTitle)->prn();	//A cool chaining~
+$html->setHead($head)->setBody($body)->setTitle('wowTitle')->prn();	//A cool chaining~
 ## of course you can write them in single line. but the print method must be last one.
-$html->redis()->setHead($head)->setBody($body)->setTitle('wowTitle)->prn();
+$html->redis()->setHead($head)->setBody($body)->setTitle('wowTitle')->prn();
 ```
 # That's it. You are well on your way to write clear html tags without type any < and > ~
