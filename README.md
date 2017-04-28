@@ -2,12 +2,12 @@
 A F**KING EASY WAY TO WRITE HTML TAGS
 
 ### changelog
-0.0.1 body - update: when there's nothing more than 'inside' you can simply write direct to array:
+0.0.1 body - update: when there's nothing more than '__in'  you can simply write direct to array:
 ```php
 $body=[
 	[
 		'h1'=>[
-			'inside'=>'wowHeading'
+			'__in' =>'wowHeading'
 		],
 		//...
 	]
@@ -67,10 +67,10 @@ $body =
 #       also keep in mind that every tag you want to specify need a array to tell tagger 
 ##      what it's containing.
 ###     like 'h1'=>array('id'=>'',
-##      what inside the tag uses key 'inside',
-#       'h1'=>array('id'=>'','inside'=>,
-//      what inside the 'inside' can be array(s) for containing sth also.
-#/	like 'div'=>array('id'=>'','inside'=>array('h1'=>... 
+##      what inside the tag uses key '__in' ,
+#       'h1'=>array('id'=>'','__in' =>,
+//      what inside the '__in'  can be array(s) for containing sth also.
+#/	like 'div'=>array('id'=>'','__in' =>array('h1'=>... 
 //
 #//	with new version, if you just want inside but not any other arguments,
 ##/	it can be simply write like 'h1'=>'wowHeading';
@@ -82,14 +82,14 @@ $body =
 		'h1'=>'YES! easy html tagger using php!' //<- this' not wrong in new version. or you need to wtire like
 	//this v
 		'h1'=>[
-			'inside'=>'YES! easy html tagger using php!(It\'s that f()king easy?????????'
+			'__in' =>'YES! easy html tagger using php!(It\'s that f()king easy?????????'
 		],
 		'div'=>[
 			'id'=>'hi_i_am_div',
-		'inside'=>[
+		'__in' =>[
 				'h2'=>[
 					'id'=>'heading_2_inside_a_div!',
-					'inside'=>'I\'m h2 inside the fatty div '.str_repeat('that in a array ',5).'.'
+					'__in' =>'I\'m h2 inside the fatty div '.str_repeat('that in a array ',5).'.'
 				]
 			]
 		]
@@ -130,22 +130,22 @@ $body =
 [
     [
         'h1'=>[
-            'inside'=>'YES! easy html tagger using php!(It\'s that f()king easy?????????'
+            '__in' =>'YES! easy html tagger using php!(It\'s that f()king easy?????????'
         ],
         'div'=>[
             'id'=>'hi_i_am_div',
-        'inside'=>
+        '__in' =>
             [
                 [
                     'div'=>[
                         'id'=>'div_inside_a_div!',
-                        'inside'=>'I\'m div inside the fatty div '.str_repeat('that in a array ',6).'.'
+                        '__in' =>'I\'m div inside the fatty div '.str_repeat('that in a array ',6).'.'
                     ]
                 ],
                 [
                     'div'=>[
                         'id'=>'div_inside_a_div_num_2!',
-                        'inside'=>'I\'m another div inside the fatty div '.str_repeat('that in a array ',6).'.'
+                        '__in' =>'I\'m another div inside the fatty div '.str_repeat('that in a array ',6).'.'
                     ]
                 ]
             ]
