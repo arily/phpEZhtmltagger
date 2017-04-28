@@ -20,14 +20,14 @@ $body =
 [
     [
         'h1'=>[
-            'inside'=>'YES! easy html tagger using php!(It\'s that f()king easy?????????'
+            '__in'=>'YES! easy html tagger using php!(It\'s that f()king easy?????????'
         ],
         'div'=>[
             'id'=>'hi_i_am_div',
-            'inside'=>[
+            '__in'=>[
                 'h2'=>[
                     'id'=>'heading_2_inside_a_div!',
-                    'inside'=>'I\'m h2 inside the fatty div '.str_repeat('that in a array ',5).'.'
+                    '__in'=>'I\'m h2 inside the fatty div '.str_repeat('that in a array ',5).'.'
                 ]
             ]
         ]
