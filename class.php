@@ -20,7 +20,7 @@ class htmltagger {
 		return $this;
 	}
 	//set html <title>
-	public function setTitle(string $title) {
+	public function setTitle($title) {
 		$this->head = array_merge_recursive($this->head, array(
 			'title'	=> htmlspecialchars($title)
 			)
@@ -147,9 +147,12 @@ class head extends htmltagger {
 		$this->html .= '<link rel="icon" href="' . $icon . '">';
 	}
 	public function script($script) {
+		$length = count($script);
+		$i = 0;
 		foreach ($script as $s) {
-			$this->html .= '<script type="' . $s['type'] .
-				     '" src="' . $s['location'] . '"></script>';
+			$this->html .= '<script type="' . $s['type'] . '" src="' . $s['location'] . "\"></script>";
+			$this->html .= $i < ($length - 1) ? "\n\t\t" : '';
+			$i++;
 		}
 	}
 	public function css($css) {
@@ -159,6 +162,17 @@ class head extends htmltagger {
 	     '<link rel="stylesheet" type="text/css" href="' . $css[$i] . '">';
 			$this->html .= $i < ($length - 1) ? "\n\t\t" : '';
 		}
+	}
+	public function style($style){
+		$html = "\n\t<style>\n";
+		if (is_array($style)){
+			foreach ($style as $s){
+				$html .= "\t\t$s";
+			}
+		} else if (is_string($style)){
+			$html .= "\t\t$style";
+		}
+		$this->html .= "$html\n\t</style>"; 
 	}
 	public function prn() {
 		echo $this->html;
@@ -181,18 +195,22 @@ class body extends htmltagger {
 		$this->html .= "\t<body>\n";
 		//open every array
 		foreach ($body as $inner) {
-			foreach ($inner as $k => $s) {
-				//every thing in <body> are tabing use offset just below
-				//and the first offset is 2 instead of 1 because <body> uses offset 1 and <html> uses 0
-				$this->$k($s, '2');
-				$this->html .= "\n";
+			if (is_string($inner)) {
+				$this->html .= $inner;
+			} else {
+				foreach ($inner as $k => $s) {
+					//every thing in <body> are tabing use offset just below
+					//and the first offset is 2 instead of 1 because <body> uses offset 1 and <html> uses 0
+					$this->$k($s, '2');
+					$this->html .= "\n";
+				}
 			}
 		}
 		$this->html .= "\t</body>\n";
 	}
 	public function prn() {
 		echo $this->html;
-		return 0;
+		return;
 	}
 	//return phrased html data
 	public function rtn() {
@@ -200,20 +218,22 @@ class body extends htmltagger {
 	}
 	// exchange htmltagging array to html tag's parameters
 	protected function exchange($data) {
-		//we don't need toch anything in the 'inside' so just unset it if it's exist
-		if (isset($data['inside'])) {
-			unset($data['inside']);
+		//we don't need toch anything in the '__in' so just unset it if it's exist
+		if (isset($data['__in'])) {
+			unset($data['__in']);
 		}
 		//prepare the array to return
 		$convert = array();
 		//Converting is just fucking easy. Cause html tag's just fucking easy to do.
-		foreach ($data as $k => $s) {
-			if ($s != '') {
-				//converting is like this:
-				//    ['content'=>'what'] -> content="what"
-				//    and we add spage before it or it'll not be able to understand by browser.
-				//    then we put it in an array to return
-				$convert[$k] = " $k=\"$s\"";
+		if (!$data == NULL) {
+			foreach ($data as $k => $s) {
+				if (!$s== '') {
+					//converting is like this:
+					//    ['content'=>'what'] -> content="what"
+					//    and we add spage before it or it'll not be able to understand by browser.
+					//    then we put it in an array to return
+					$convert[$k] = " $k=\"$s\"";
+				}
 			}
 		}
 		//kick converted parameters back
@@ -241,12 +261,14 @@ class body extends htmltagger {
 		}
 		//close prefix
 		$this->html .= '>';
-		//ADD 2017-04-27 if you want only
-		if ($dataType == 's') {
+		if(is_null($data)){
+			return;
+		} else if ($dataType == 's') {
 			$this->html .= "$data</$type>";
+			return;
 		} else {
 			//get what in the tag that just opened
-			$inside = $data['inside'];
+			$inside = $data['__in'];
 			//if it's an array, re-call an function to keep phrasing html tags
 			if (is_array($inside)) {
 				//we admire if there's only on array in the $inside. we use another array inside there to avoid
@@ -259,9 +281,13 @@ class body extends htmltagger {
 				} //if it comes' with more array.
 				else {
 					foreach ($inside as $i) {
-						foreach ($i as $k => $s) {
+						if (is_string($i)) {
+							$this->html .= $i;
+						} else {
+							foreach ($i as $k => $s) {
 							$this->html .= "\n";
 							$this->$k($s, $offset + 1);
+							}
 						}
 					}
 				}
@@ -274,7 +300,7 @@ class body extends htmltagger {
 			}
 			//or we don't know how to do with the data, so print it out.
 			else {
-				$this->errCatcher('Error', __METHOD__, 'No suitable parameters\' type', __LINE__-8);
+				echo 'Error: ', __METHOD__, 'No suitable parameters\' type', __LINE__-8;
 			}
 		}
 	}
