@@ -73,7 +73,7 @@ class htmltagger {
 			$head_html = $redis->hGet('htmltagger', $head_md5);
 			$body_html = $redis->hGet('htmltagger', $body_md5);
 		}
-		echo "<html>\n";
+		echo "<!DOCTYPE html>\n<html>\n";
 		if (!$head_html) {
 			$head = new head($this->head);
 			if ($redis_enable) {
@@ -132,7 +132,7 @@ class htmltagger {
 class head extends htmltagger {
 	protected $html = '';
 	public function __construct($head) {
-		$this->html .= "\t<head>\n";
+		$this->html .= "\t<head>\n\t\t<meta charset=\"UTF-8\">\n";
 		foreach ($head as $k => $s) {
 			$this->html .= "\t\t";
 			$this->$k($s);
@@ -259,16 +259,20 @@ class body extends htmltagger {
 				$this->html .= $config;
 			}
 		}
+		//get what in the tag that just opened
+		$inside = isset($data['__in']) ? $data['__in'] : NULL;
 		//close prefix
-		$this->html .= '>';
+		if (is_null($inside)){
+			$this->html .= '/>';
+		} else {
+			$this->html .= '>';
+		}
 		if(is_null($data)){
 			return;
 		} else if ($dataType == 's') {
 			$this->html .= "$data</$type>";
 			return;
 		} else {
-			//get what in the tag that just opened
-			$inside = $data['__in'];
 			//if it's an array, re-call an function to keep phrasing html tags
 			if (is_array($inside)) {
 				//we admire if there's only on array in the $inside. we use another array inside there to avoid
@@ -293,14 +297,18 @@ class body extends htmltagger {
 				}
 				//finish the tag
 				$this->html .= "\n" . str_repeat("\t", $offset) . "</$type>";
+				return;
 			}
 			//if what we want inside the tag is a string, just print it.
 			else if (is_string($inside)) {
 				$this->html .= "$inside</$type>";
-			}
+				return;
+			} 
 			//or we don't know how to do with the data, so print it out.
-			else {
-				echo 'Error: ', __METHOD__, 'No suitable parameters\' type', __LINE__-8;
+			else if(!is_null($inside)){
+				var_dump($inside);
+				echo 'Error: ', __METHOD__, ' No suitable parameters\' type at :', __LINE__-8,"\n";
+				return;
 			}
 		}
 	}
