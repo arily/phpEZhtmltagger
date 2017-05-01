@@ -1,6 +1,7 @@
 <?php
 class htmltagger {
 	//declare
+	private $buffer = FALSE;
 	public $head   = [];
 	public $body   = [];
 	public $top    = [];
@@ -60,6 +61,8 @@ class htmltagger {
 	}
 	//print html tags
 	public function prn() {
+		if(!ob_start("ob_gzhandler")) ob_start();
+		$this->buffer = TRUE;
 		$head_html    = FALSE;
 		$body_html    = FALSE;
 		$redis_enable = $this->redis['enable'];
@@ -81,6 +84,7 @@ class htmltagger {
 				$redis->hSet('htmltagger', $head_md5, $head_html);
 			}
 			$head->prn();
+			ob_flush();
 		} else {
 			echo $head_html;
 		}if (!$body_html) {
@@ -94,26 +98,14 @@ class htmltagger {
 			echo $body_html;
 		}
 		echo '</html>';
+		ob_end_flush();
+		$this->buffer = FALSE;
 		return 0;
-	}
-	public function setTop($id, $class, $style, $top) {
-	}
-	public function setString($member, $data) {
-		if (!is_string($this->$member)) {
-			echo ($this->errCatcher('Abort', __METHOD__, 'setting a NON-String member', __LINE__));
-			return FALSE;
-		}
-		if (!is_string($data)) {
-			echo ($this->errCatcher('Abort', __METHOD__, 'parameter is not string', __LINE__));
-			return FALSE;
-		}
-		$this->$member = $data;
-		return TRUE;
 	}
 	//shrink the unused tags
 	protected function shrink($member) {
 		$member = $this->$member();
-		if (!isset($this->$member)) {
+		if (!isset($member)) {
 			return FALSE;
 		}
 		$content = $member['content'];
@@ -127,94 +119,109 @@ class htmltagger {
 		$printData = $level . ': METHOD( ' . $method . ' ): ' . $comment . " at: $line. \n";
 		return $printData;
 	}
+	public function __destruct (){
+		if ($this->buffer) ob_end_clean();
+	}
 }
 
 class head extends htmltagger {
-	protected $html = '';
+	private $buffer = FALSE;
 	public function __construct($head) {
-		$this->html .= "\t<head>\n\t\t<meta charset=\"UTF-8\">\n";
+		ob_start();
+		$this->buffer = TRUE;
+		echo "\t<head>\n\t\t<meta charset=\"UTF-8\">\n";
 		foreach ($head as $k => $s) {
-			$this->html .= "\t\t";
+			echo "\t\t";
 			$this->$k($s);
-			$this->html .= "\n";
+			echo "\n";
 		}
-		$this->html .= "\t</head>\n";
+		echo "\t</head>\n";
 	}
 	public function title($title) {
-		$this->html .= "<title>$title</title>";
+		echo "<title>$title</title>";
 	}
 	public function icon($icon) {
-		$this->html .= '<link rel="icon" href="' . $icon . '">';
+		echo '<link rel="icon" href="' , $icon , '">';
 	}
 	public function script($script) {
 		$length = count($script);
 		$i = 0;
 		foreach ($script as $s) {
-			$this->html .= '<script type="' . $s['type'] . '" src="' . $s['location'] . "\"></script>";
-			$this->html .= $i < ($length - 1) ? "\n\t\t" : '';
+			echo '<script type="' , $s['type'] , '" src="' , $s['location'] , '"></script>';
+			echo $i < ($length - 1) ? "\n\t\t" : '';
 			$i++;
 		}
 	}
 	public function css($css) {
 		$length = count($css);
 		for ($i = 0; $i < $length; $i++) {
-			$this->html .=
-	     '<link rel="stylesheet" type="text/css" href="' . $css[$i] . '">';
-			$this->html .= $i < ($length - 1) ? "\n\t\t" : '';
+			echo '<link rel="stylesheet" type="text/css" href="' , $css[$i] , '">';
+			echo $i < ($length - 1) ? "\n\t\t" : '';
 		}
 	}
 	public function style($style){
-		$html = "\n\t<style>\n";
+		echo  "\n\t<style>\n";
 		if (is_array($style)){
 			foreach ($style as $s){
-				$html .= "\t\t$s";
+				echo  "\t\t$s";
 			}
 		} else if (is_string($style)){
-			$html .= "\t\t$style";
+			echo  "\t\t$style";
 		}
-		$this->html .= "$html\n\t</style>"; 
+		echo "\n\t</style>"; 
 	}
 	public function prn() {
-		echo $this->html;
-		return 0;
+		ob_end_flush();
+		$this->buffer = FALSE;
+		return ;
 	}
 	public function rtn() {
-		return $this->html;
+		$return = ob_get_contents();
+		ob_end_clean();
+		$this->buffet = FALSE;
+		return $return;
 	}
 	public function __call($method, $parameters) {
 		return;
 	}
+	public function __destruct () {
+		if ($this->buffer) ob_end_clean();
+	}
 }
 
 class body extends htmltagger {
-	            //declare the container of all html tags going to be print.
-	protected $html = '';
+	private $buffer = FALSE;
 	//when a new body object's cerating
 	public function __construct($body) {
+		ob_start();
 		//all tags need to be placed in <body> so we print it at FUCKING FIRST without anything above it.
-		$this->html .= "\t<body>\n";
+		$this->buffer = TRUE;
+		echo "\t<body>\n";
 		//open every array
 		foreach ($body as $inner) {
 			if (is_string($inner)) {
-				$this->html .= $inner;
+				echo $inner;
 			} else {
 				foreach ($inner as $k => $s) {
 					//every thing in <body> are tabing use offset just below
 					//and the first offset is 2 instead of 1 because <body> uses offset 1 and <html> uses 0
 					$this->$k($s, '2');
-					$this->html .= "\n";
+					echo "\n";
 				}
 			}
 		}
-		$this->html .= "\t</body>\n";
+		echo "\t</body>\n";
 	}
 	public function prn() {
-		echo $this->html;
-		return;
+		ob_end_flush();
+		$this->buffer = FALSE;
+		return ;
 	}
-	//return phrased html data
 	public function rtn() {
-		return $this->html;
+		$return = ob_get_contents();
+		ob_end_clean();
+		$this->buffet = FALSE;
+		return $return;
 	}
 	// exchange htmltagging array to html tag's parameters
 	protected function exchange($data) {
@@ -248,29 +255,29 @@ class body extends htmltagger {
 		//is $data an array or a string?
 		$dataType = is_string($data) ? 's' : 'a' ;
 		//format the html tag
-		$this->html .= str_repeat("\t", $offset);
+		echo str_repeat("\t", $offset);
 		//open a html tag
-		$this->html .= "<$type";
+		echo "<$type";
 		//convert array setting-arguments to html tag's parameters @ADD 0127-04-27 if it's array
 		if ($dataType == 'a') {
 			$return = $this->exchange($data);
 			//print all parameters
 			foreach ($return as $config) {
-				$this->html .= $config;
+				echo $config;
 			}
 		}
 		//get what in the tag that just opened
 		$inside = isset($data['__in']) ? $data['__in'] : NULL;
 		//close prefix
 		if (is_null($inside)){
-			$this->html .= '/>';
+			echo '/>';
 		} else {
-			$this->html .= '>';
+			echo '>';
 		}
 		if(is_null($data)){
 			return;
 		} else if ($dataType == 's') {
-			$this->html .= "$data</$type>";
+			echo "$data</$type>";
 			return;
 		} else {
 			//if it's an array, re-call an function to keep phrasing html tags
@@ -279,29 +286,29 @@ class body extends htmltagger {
 				//if you want two tag that's uses one name.
 				if (!isset($inside[0])) {
 					foreach ($inside as $k => $s) {
-						$this->html .= "\n";
+						echo "\n";
 						$this->$k($s, $offset + 1);
 					}
 				} //if it comes' with more array.
 				else {
 					foreach ($inside as $i) {
 						if (is_string($i)) {
-							$this->html .= $i;
+							echo $i;
 						} else {
 							foreach ($i as $k => $s) {
-							$this->html .= "\n";
+							echo "\n";
 							$this->$k($s, $offset + 1);
 							}
 						}
 					}
 				}
 				//finish the tag
-				$this->html .= "\n" . str_repeat("\t", $offset) . "</$type>";
+				echo "\n" . str_repeat("\t", $offset) . "</$type>";
 				return;
 			}
 			//if what we want inside the tag is a string, just print it.
 			else if (is_string($inside)) {
-				$this->html .= "$inside</$type>";
+				echo "$inside</$type>";
 				return;
 			} 
 			//or we don't know how to do with the data, so print it out.
@@ -311,5 +318,9 @@ class body extends htmltagger {
 				return;
 			}
 		}
+	}
+
+	public function __destruct () {
+		if ($this->buffer) ob_end_clean();
 	}
 }
