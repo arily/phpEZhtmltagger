@@ -2,7 +2,11 @@
 A F**KING EASY WAY TO WRITE HTML TAGS
 
 ### changelog
-0.0.1 body - update: when there's nothing more than '__in'  you can simply write direct to array:
+#### 0.0.2 using buffer to incrase speed and lowing cost. 
+also we print <head> first even we aren't finish prepearing <body> so browser can pull js and css before we feed him <body>.
+this'll get an instant-loading-speed-up-feeling because we might have a huge <body>.
+
+#### 0.0.1 body - update: when there's nothing more than '__in'  you can simply write direct to array:
 ```php
 $body=[
 	[
