@@ -84,10 +84,11 @@ class htmltagger {
 				$redis->hSet('htmltagger', $head_md5, $head_html);
 			}
 			$head->prn();
-			ob_flush();
 		} else {
 			echo $head_html;
-		}if (!$body_html) {
+		}
+		ob_flush();
+		if (!$body_html) {
 			$body = new body($this->body);
 			if ($redis_enable) {
 				$body_html = $body->rtn();
