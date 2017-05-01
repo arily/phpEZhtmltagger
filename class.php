@@ -61,7 +61,7 @@ class htmltagger {
 	}
 	//print html tags
 	public function prn() {
-		if(!ob_start("ob_gzhandler")) ob_start();
+		ob_start();
 		$this->buffer = TRUE;
 		$head_html    = FALSE;
 		$body_html    = FALSE;
