@@ -304,7 +304,7 @@ class body extends htmltagger {
 					}
 				}
 				//finish the tag
-				echo "\n" . str_repeat("\t", $offset) . "</$type>";
+				echo "\n" , str_repeat("\t", $offset) , "</$type>";
 				return;
 			}
 			//if what we want inside the tag is a string, just print it.
