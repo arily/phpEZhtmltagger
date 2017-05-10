@@ -152,11 +152,9 @@ class head extends htmltagger {
 	}
 	public function script($script) {
 		$length = count($script);
-		$i = 0;
 		foreach ($script as $s) {
 			echo '<script type="' , $s['type'] , '" src="' , $s['location'] , '"></script>';
 			echo $i < ($length - 1) ? "\n\t\t" : '';
-			$i++;
 		}
 	}
 	public function css($css) {
