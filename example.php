@@ -29,8 +29,7 @@ $head = [
 	'css'		=> $css
 ];
 
-$body = array (
-  0 => 
+$top = 
   array (
     'div' => 
     array (
@@ -279,8 +278,7 @@ $body = array (
         ),
       ),
     ),
-  ),
-);
+  );
 
 $nice_button = ['button' => ['type' => 'button', 'class' => 'myButton', '__in' => '漂亮的按钮']];
 $fuckluna_info = ['a' => ['href' => 'http://fuckluna.arily.moe/','style' => 'color:white;text-decoration:none;visited:color:white;','__in' => '顺便宣传下草露娜']];
@@ -303,8 +301,7 @@ $wrap = ['div' => ['style' => ' height:380px;margin-left:-50%;margin-top:-20%;',
 
 $mainbody = ['div' => ['class' => 'mainbody', 'style'=> 'position:fixed;left:50%;rigth:50%;top:50%;bottom:50%;', '__in' => [$wrap]]];
 
-$body['1'] =$mainbody;
 
 
 $html = new htmltagger();
-$html->setHead($head)->setBody($body[0],$body[1])->setTitle('wowTitle')->prn();
+$html->setHead($head)->setBody($top,$mainbody)->setTitle('wowTitle')->prn();
