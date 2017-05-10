@@ -2,10 +2,8 @@
 class htmltagger {
 	//declare
 	private $buffer = FALSE;
-	public $head   = [];
-	public $body   = [];
-	public $top    = [];
-	public $footer = [];
+	private $head   = [];
+	private $body   = [];
 	//disable redis as default
 	protected $redis = [
 		'enable' => FALSE
@@ -32,7 +30,6 @@ class htmltagger {
 	public function setHead(array $head) {
 		if (is_array($head)) {
 			$this->head = array_merge_recursive($this->head, $head);
-			return $this;
 		} else {
 			$this->head = array();
 			$this->head = $head;
@@ -40,19 +37,15 @@ class htmltagger {
 		return $this;
 	}
 	//set html <body>
-	public function setBody(array $body) {
-		if (is_array($body)) {
-			$this->body = array_merge_recursive($this->body, $body);
-		} else {
-			$this->body = array();
-			$this->body = array_merge_recursive($this->body, $body);
-		}
+	public function setBody() {
+		$body = func_get_args();
+		$this->body = array_merge_recursive($this->body, $body);
 		return $this;
 	}
 	//get htmlized <head>
 	public function getHeadHtml() {
 		$head	= new head($this->head);
-		return $head->trn();
+		return $head->rtn();
 	}
 	//get htmlized <body>
 	public function getBodyHtml() {
@@ -116,9 +109,22 @@ class htmltagger {
 			}
 		}
 	}
-	protected function errCatcher($level, $method, $comment, $line) {
-		$printData = $level . ': METHOD( ' . $method . ' ): ' . $comment . " at: $line. \n";
-		return $printData;
+	public static function errHandler ($errlevel, $errmsg, $errfile, $errline) {
+		if ($errlevel < 256 || $errlevel > 1024 ) return FALSE;
+		$invisable = ($errlevel > 256 );
+		$cli = (php_sapi_name() == 'cli');
+		if (!$cli){ 
+			echo '<phpEZhtmltaggerErr';
+			if ($invisable) echo ' style="visibility:hidden;"';
+			echo '>';
+		}
+		$type = ($invisable) ? 'Error: ' : 'Fat Error: ';
+		echo PHP_EOL,$type,$errmsg,PHP_EOL;
+		if (!$cli) echo '</phpEZhtmltaggerErr>';
+		if ($need_to_die = ($errlevel = 256 )) {
+			ob_flush();
+			die();
+		}
 	}
 	public function __destruct (){
 		if ($this->buffer) ob_end_clean();
@@ -134,7 +140,7 @@ class head extends htmltagger {
 		foreach ($head as $k => $s) {
 			echo "\t\t";
 			$this->$k($s);
-			echo "\n";
+			echo PHP_EOL;
 		}
 		echo "\t</head>\n";
 	}
@@ -194,20 +200,22 @@ class body extends htmltagger {
 	private $buffer = FALSE;
 	//when a new body object's cerating
 	public function __construct($body) {
+		set_error_handler(array('htmltagger', 'errHandler'));
+		if (isset($body[0])) trigger_error('You are feeding phpEZhtmltagger ver 0.0.1-0.0.2 arrays to phpEZhtmltagger 0.0.3. '.PHP_EOL.'This\' need some easy-array-changing-operation. ',E_USER_ERROR);
 		ob_start();
 		//all tags need to be placed in <body> so we print it at FUCKING FIRST without anything above it.
 		$this->buffer = TRUE;
 		echo "\t<body>\n";
 		//open every array
-		foreach ($body as $inner) {
-			if (is_string($inner)) {
-				echo $inner;
+		foreach ($body as $s) {
+			if (is_string($s)) {
+				echo $s;
 			} else {
-				foreach ($inner as $k => $s) {
+				foreach ($s as $k => $s) {
 					//every thing in <body> are tabing use offset just below
 					//and the first offset is 2 instead of 1 because <body> uses offset 1 and <html> uses 0
 					$this->$k($s, '2');
-					echo "\n";
+					echo PHP_EOL;
 				}
 			}
 		}
@@ -287,7 +295,7 @@ class body extends htmltagger {
 				//if you want two tag that's uses one name.
 				if (!isset($inside[0])) {
 					foreach ($inside as $k => $s) {
-						echo "\n";
+						echo PHP_EOL;
 						$this->$k($s, $offset + 1);
 					}
 				} //if it comes' with more array.
@@ -297,14 +305,14 @@ class body extends htmltagger {
 							echo $i;
 						} else {
 							foreach ($i as $k => $s) {
-							echo "\n";
+							echo PHP_EOL;
 							$this->$k($s, $offset + 1);
 							}
 						}
 					}
 				}
 				//finish the tag
-				echo "\n" , str_repeat("\t", $offset) , "</$type>";
+				echo PHP_EOL , str_repeat("\t", $offset) , "</$type>";
 				return;
 			}
 			//if what we want inside the tag is a string, just print it.
@@ -315,7 +323,7 @@ class body extends htmltagger {
 			//or we don't know how to do with the data, so print it out.
 			else if(!is_null($inside)){
 				var_dump($inside);
-				echo 'Error: ', __METHOD__, ' No suitable parameters\' type at :', __LINE__-8,"\n";
+				echo PHP_EOL,'Error: ', __METHOD__, ' No suitable parameters\' type at :', __LINE__-8,PHP_EOL;
 				return;
 			}
 		}
