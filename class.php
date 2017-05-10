@@ -161,9 +161,9 @@ class head extends htmltagger {
 	}
 	public function css($css) {
 		$length = count($css);
-		for ($i = 0; $i < $length; $i++) {
-			echo '<link rel="stylesheet" type="text/css" href="' , $css[$i] , '">';
-			echo $i < ($length - 1) ? "\n\t\t" : '';
+		foreach ($css as $k=>$s) {
+			echo '<link rel="stylesheet" type="text/css" href="' , $s , '">';
+			echo $k < ($length - 1) ? "\n\t\t" : '';
 		}
 	}
 	public function style($style){
