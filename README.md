@@ -14,7 +14,7 @@ $html = new htmltagger();
 html->setBody($body)->prn();
 ```
 this' a 0.0.1-0.0.2 array set for phpEZhtmltagger.
-in 0.0.3 we need make them separate.
+in 0.0.3 we make them separate.
 ```php
 $h1 = ['h1'=>'Your LangShiID:'];
 $br = ['br'=>'']; // empty string to output <**> and NULL to output <** />
