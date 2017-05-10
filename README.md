@@ -21,7 +21,7 @@ $br = ['br'=>'']; // empty string to output <**> and NULL to output <** />
 $h2 = ['h2'=>file_get_contents('http://composer.subnet.arily.tk/api/wolf')];
 
 $html = new htmltagger();
-$html->setBody($h1,br,h2)->prn();
+$html->setBody($h1,$br,$h2)->prn();
 ```
 ```html
 	<body>
