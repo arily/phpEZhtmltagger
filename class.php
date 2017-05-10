@@ -152,28 +152,28 @@ class head extends htmltagger {
 	}
 	public function script($script) {
 		$length = count($script);
-		foreach ($script as $s) {
+		foreach ($script as $k=>$s) {
 			echo '<script type="' , $s['type'] , '" src="' , $s['location'] , '"></script>';
-			echo $i < ($length - 1) ? "\n\t\t" : '';
+			echo ($k < ($length - 1)) ? "\n\t\t" : '';
 		}
 	}
 	public function css($css) {
 		$length = count($css);
 		foreach ($css as $k=>$s) {
 			echo '<link rel="stylesheet" type="text/css" href="' , $s , '">';
-			echo $k < ($length - 1) ? "\n\t\t" : '';
+			echo ($k < ($length - 1)) ? "\n\t\t" : '';
 		}
 	}
 	public function style($style){
 		echo  "\n\t<style>\n";
 		if (is_array($style)){
 			foreach ($style as $s){
-				echo  "\t\t$s";
+				echo  "\t\t$s\n";
 			}
 		} else if (is_string($style)){
-			echo  "\t\t$style";
+			echo  "\t\t$style\n";
 		}
-		echo "\n\t</style>"; 
+		echo "\t</style>"; 
 	}
 	public function prn() {
 		ob_end_flush();
@@ -199,7 +199,7 @@ class body extends htmltagger {
 	//when a new body object's cerating
 	public function __construct($body) {
 		set_error_handler(array('htmltagger', 'errHandler'));
-		if (isset($body[0])) trigger_error('You are feeding phpEZhtmltagger ver 0.0.1-0.0.2 arrays to phpEZhtmltagger 0.0.3. '.PHP_EOL.'This\' need some easy-array-changing-operation. ',E_USER_ERROR);
+		if (isset($body[0][0])) trigger_error('You are feeding phpEZhtmltagger ver 0.0.1-0.0.2 arrays to phpEZhtmltagger 0.0.3. '.PHP_EOL.'This\' need some easy-array-changing-operation. ',E_USER_ERROR);
 		ob_start();
 		//all tags need to be placed in <body> so we print it at FUCKING FIRST without anything above it.
 		$this->buffer = TRUE;
@@ -230,8 +230,8 @@ class body extends htmltagger {
 		$this->buffet = FALSE;
 		return $return;
 	}
-	// exchange htmltagging array to html tag's parameters
-	protected function exchange($data) {
+	// __exchange htmltagging array to html tag's parameters
+	protected function __exchange($data) {
 		//we don't need toch anything in the '__in' so just unset it if it's exist
 		if (isset($data['__in'])) {
 			unset($data['__in']);
@@ -253,37 +253,40 @@ class body extends htmltagger {
 		//kick converted parameters back
 		return $convert;
 	}
-	//print all tags just using this function.
+	//print all other tags just using this function.
 	//all this function need that there's a string or sth just printable if it's not an array.
 	public function __call($type, $arguments) {
 		//recover arguments
 		$data   = $arguments['0'];
 		$offset = $arguments['1'];
 		//is $data an array or a string?
-		$dataType = is_string($data) ? 's' : 'a' ;
-		//format the html tag
+		$dataType 	= is_string($data) ? 's' : 'a' ;
+		//get what in the tag that just opened
+		$inside 	= isset($data['__in']) ? $data['__in'] : NULL;
+		//formating html tag
 		echo str_repeat("\t", $offset);
 		//open a html tag
 		echo "<$type";
-		//convert array setting-arguments to html tag's parameters @ADD 0127-04-27 if it's array
-		if ($dataType == 'a') {
-			$return = $this->exchange($data);
+		//convert array setting-arguments to html tag's parameters @ADD 2017-04-27 if it's array
+		if ($dataType == 'a' && $data != []) {
+			$return = $this->__exchange($data);
 			//print all parameters
 			foreach ($return as $config) {
 				echo $config;
 			}
 		}
-		//get what in the tag that just opened
-		$inside = isset($data['__in']) ? $data['__in'] : NULL;
 		//close prefix
-		if (is_null($inside)){
+		if (is_null($inside)&&$dataType == 'a'){
+			//for <img /> ( <** />)
 			echo '/>';
 		} else {
+			//for <h1></h1> ( <**></**>) and <br> (<**>)
 			echo '>';
 		}
 		if(is_null($data)){
 			return;
 		} else if ($dataType == 's') {
+			if ($data =='') return;
 			echo "$data</$type>";
 			return;
 		} else {
