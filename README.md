@@ -8,7 +8,7 @@ A F**KING EASY WAY TO WRITE HTML TAGS
 ##### bug fix (rtn made a typo)
 ##### $$$$$ more memory cost
 ```php
-$body = [[	'h1'=>'Your LangShiID:'],['br'=>''],['h2'=>file_get_contents('http://composer.subnet.arily.tk/api/wolf')]];
+$body = [['h1'=>'Your LangShiID:'],['br'=>''],['h2'=>file_get_contents('http://composer.subnet.arily.tk/api/wolf')]];
 
 $html = new htmltagger();
 html->setBody($body)->prn();
