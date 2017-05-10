@@ -54,7 +54,6 @@ $body=[
 	]
 ]
 ```
-
 # How to use it 
 include './class.php'
 
@@ -91,7 +90,26 @@ $head = [
         ]
     /*...*/
 ];
+```
+### This' 0.0.1 Readme File below. watch out that we don't need put all things in arrays in array.
+```php
+$anything = [[...],[...]];
+```
+	if you want this work in 0.0.3
+	you should do like this:
+```php
+$html = new htmltagger();
+$html->sethead($head)->setBody($anything[0],$anything[1])->prn();
+```
+	or this
+```php
+$anything_1 = [....];
+$anything_2 = [....];
 
+$html = new htmltagger();
+$html->sethead($head)->setBody($anything_1,$anything_2)->prn();
+```
+```php
 $body = 
 #       body's more complicate that you need to put all things in arrays in array.
 #       like array(array('h1'=>. because we always using same tag names but array in php
