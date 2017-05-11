@@ -134,6 +134,7 @@ class htmltagger {
 class head extends htmltagger {
 	private $buffer = FALSE;
 	public function __construct($head) {
+		if ($head == []) {echo '<--!empty head-->',PHP_EOL;return;}
 		ob_start();
 		$this->buffer = TRUE;
 		echo "\t<head>\n\t\t<meta charset=\"UTF-8\">\n";
@@ -176,13 +177,13 @@ class head extends htmltagger {
 		echo "\t</style>"; 
 	}
 	public function prn() {
-		ob_end_flush();
+		if ($this->buffer) ob_end_flush();
 		$this->buffer = FALSE;
 		return ;
 	}
 	public function rtn() {
 		$return = ob_get_contents();
-		ob_end_clean();
+		if ($this->buffer) ob_end_clean();
 		$this->buffet = FALSE;
 		return $return;
 	}
@@ -199,6 +200,7 @@ class body extends htmltagger {
 	//when a new body object's cerating
 	public function __construct($body) {
 		set_error_handler(array('htmltagger', 'errHandler'));
+		if ($body ==[]) {echo '<--!empty body-->',PHP_EOL;return;}
 		if (isset($body[0][0])) trigger_error('You are feeding phpEZhtmltagger ver 0.0.1-0.0.2 arrays to phpEZhtmltagger 0.0.3. '.PHP_EOL.'This\' need some easy-array-changing-operation. ',E_USER_ERROR);
 		ob_start();
 		//all tags need to be placed in <body> so we print it at FUCKING FIRST without anything above it.
@@ -220,13 +222,13 @@ class body extends htmltagger {
 		echo "\t</body>\n";
 	}
 	public function prn() {
-		ob_end_flush();
+		if ($this->buffer) ob_end_flush();
 		$this->buffer = FALSE;
 		return ;
 	}
 	public function rtn() {
 		$return = ob_get_contents();
-		ob_end_clean();
+		if ($this->buffer) ob_end_clean();
 		$this->buffet = FALSE;
 		return $return;
 	}
