@@ -2,7 +2,35 @@
 A F**KING EASY WAY TO WRITE HTML TAGS
 
 ### changelog
-#### 0.0.2 using buffer to incrase speed and lowing cost. 
+#### 0.0.3 
+##### using multi-arguments in body. 
+##### increase array-re-using-ability for such as top, footer and so on.
+##### bug fix (rtn made a typo)
+##### $$$$$ more memory cost
+```php
+$body = [['h1'=>'Your LangShiID:'],['br'=>''],['h2'=>file_get_contents('http://composer.subnet.arily.tk/api/wolf')]];
+
+$html = new htmltagger();
+html->setBody($body)->prn();
+```
+this' a 0.0.1-0.0.2 array set for phpEZhtmltagger.
+in 0.0.3 we make them separate.
+```php
+$h1 = ['h1'=>'Your LangShiID:'];
+$br = ['br'=>'']; // empty string to output <**> and NULL to output <** />
+$h2 = ['h2'=>file_get_contents('http://composer.subnet.arily.tk/api/wolf')];
+
+$html = new htmltagger();
+$html->setBody($h1,$br,$h2)->prn();
+```
+```html
+	<body>
+		<h1>Your LangShiID:</h1>
+		<br>
+		<h2>kAthcirnoAm</h2>
+	</body>
+```
+#### 0.0.2 using buffer to increase speed and lowing cost. 
 also we print \<head\> first even we aren't finish prepearing \<body\> so browser can pull js and css before we feed him \<body\>.
 this'll get an instant-loading-speed-up-feeling because we might have a huge \<body\>.
 
@@ -26,7 +54,6 @@ $body=[
 	]
 ]
 ```
-
 # How to use it 
 include './class.php'
 
@@ -63,7 +90,26 @@ $head = [
         ]
     /*...*/
 ];
+```
+### This' 0.0.1 Readme File below. watch out that we don't need put all things in arrays in array.
+```php
+$anything = [[...],[...]];
+```
+	if you want this work in 0.0.3
+	you should do like this:
+```php
+$html = new htmltagger();
+$html->sethead($head)->setBody($anything[0],$anything[1])->prn();
+```
+	or this
+```php
+$anything_1 = [....];
+$anything_2 = [....];
 
+$html = new htmltagger();
+$html->sethead($head)->setBody($anything_1,$anything_2)->prn();
+```
+```php
 $body = 
 #       body's more complicate that you need to put all things in arrays in array.
 #       like array(array('h1'=>. because we always using same tag names but array in php

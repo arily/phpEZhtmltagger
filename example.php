@@ -1,5 +1,5 @@
 <?php
-include "./class.php";
+include "class.php";
 
 $style = [
 			'body:before{background-image: url(http://resource.arily.moe/resource.main/pictures/ppp.jpg);}'
@@ -29,8 +29,7 @@ $head = [
 	'css'		=> $css
 ];
 
-$body = array (
-  0 => 
+$top = 
   array (
     'div' => 
     array (
@@ -279,8 +278,7 @@ $body = array (
         ),
       ),
     ),
-  ),
-);
+  );
 
 $nice_button = ['button' => ['type' => 'button', 'class' => 'myButton', '__in' => '漂亮的按钮']];
 $fuckluna_info = ['a' => ['href' => 'http://fuckluna.arily.moe/','style' => 'color:white;text-decoration:none;visited:color:white;','__in' => '顺便宣传下草露娜']];
@@ -291,7 +289,7 @@ $h2_aricloud_cloudari = ['h2' => ['style' => 'padding-left:calc(50% + 10px);padd
 
 $div_containing_h2_h1 = ['div'=> ['__in' =>[$h2_aricloud_cloudari, $h1_containing_i_fuckluna_info,$nice_button]]];
 
-$div_containing_img_aricloud = ['div'=> ['__in' => ['img' =>['src' => '//arily.moe/page/images/AriCloud-1.png', 'class' => 'pic360', 'style' => 'float:left;', '__in' => NULL]]]];
+$div_containing_img_aricloud = ['div'=> ['__in' => ['img' =>['src' => 'https://cloud.arily.moe/apps/theming/logo', 'class' => 'pic360', 'style' => 'float:left;', '__in' => NULL]]]];
 
 $div_cdki_containing_div_containing_img_aricloud_div_containing_h2_h1 = ['div' => ['style' => 'height:335px;', '__in' => [$div_containing_img_aricloud,$div_containing_h2_h1]]];
 
@@ -303,8 +301,7 @@ $wrap = ['div' => ['style' => ' height:380px;margin-left:-50%;margin-top:-20%;',
 
 $mainbody = ['div' => ['class' => 'mainbody', 'style'=> 'position:fixed;left:50%;rigth:50%;top:50%;bottom:50%;', '__in' => [$wrap]]];
 
-$body['1'] =$mainbody;
 
 
 $html = new htmltagger();
-$html->redis()->setHead($head)->setBody($body)->setTitle('wowTitle')->prn();
+$html->setHead($head)->setBody($top,$mainbody)->setTitle('wowTitle')->prn();
