@@ -2,6 +2,9 @@
 A F**KING EASY WAY TO WRITE HTML TAGS
 
 ### changelog
+#### 0.1
+##### first usable version.
+###### bug fix.
 #### 0.0.3 
 ##### using multi-arguments in body. 
 ##### increase array-re-using-ability for such as top, footer and so on.
