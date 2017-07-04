@@ -51,20 +51,21 @@ class htmltagger {
 		$redis_enable 	= $this->redis['enable'];
 		if ($redis_enable) {
 			$redis = new Redis();
-			if (!$redis->connect($addr = 'localhost', $port = 6379)) {
+			if (!$redis->connect($this->redis['addr'],$this->redis['port'])) {
 				exit('unable to connect to Redis.');
 			}
 			$head_md5 	= md5(serialize($this->head));
 			$body_md5 	= md5(serialize($this->body));
-			$head_html 	= $redis->hGet('htmltagger', $head_md5);
-			$body_html 	= $redis->hGet('htmltagger', $body_md5);
+			$head_html 	= $redis->get("htmltagger:$head_md5");
+			$body_html 	= $redis->get("htmltagger:$body_md5");
 		}
 		echo "<!DOCTYPE html>", PHP_EOL, "<html>", PHP_EOL;
 		if (!$head_html) {
 			$head = new head($this->head);
 			if ($redis_enable) {
 				$head_html = $head->__rtn();
-				$redis->hSet('htmltagger', $head_md5, $head_html);
+				$redis->set("htmltagger:$head_md5", $head_html);
+				$redis->setTimeout("htmltagger:$head_md5",$this->redis['expire_time']);
 			}
 			$head->__prn();
 		} else {
@@ -75,16 +76,17 @@ class htmltagger {
 			$body = new body($this->body);
 			if ($redis_enable) {
 				$body_html = $body->__rtn();
-				$redis->hSet('htmltagger', $body_md5, $body_html);
+				$redis->set("htmltagger:$body_md5", $body_html);
+				$redis->setTimeout("htmltagger:$body_md5",$this->redis['expire_time']);
 			}
 			$body->__prn();
 		} else {
 			echo $body_html;
 		}
 		echo '</html>';
-		ob_end_flush();
+		ob_flush();
 		$this->buffer = FALSE;
-		return 0;
+		return;
 	}
 	//shrink the unused tags
 	protected function shrink($member) {
@@ -122,6 +124,28 @@ class htmltagger {
 }
 class head extends htmltagger {
 	private $buffer = FALSE;
+	protected function __exchange($data) {
+		//we don't need toch anything in the '__in' so just unset it if it's exist
+		if (isset($data['__in'])) {
+			unset($data['__in']);
+		}
+		//prepare the array to return
+		$convert = array();
+		//Converting is just fucking easy. Cause html tag's just fucking easy to do.
+		if (!$data == NULL) {
+			foreach ($data as $k => $s) {
+				if (!$s == '') {
+					//converting is like this:
+					//    ['content'=>'what'] -> content="what"
+					//    and we add spage before it or it'll not be able to understand by browser.
+					//    then we put it in an array to return
+					$convert[$k] = "$k=\"$s\"";
+				}
+			}
+		}
+		//kick converted parameters back
+		return $convert;
+	}
 	public function __construct($head) {
 		if ($head == []) {
 			echo '<--!empty head-->', PHP_EOL;
@@ -129,7 +153,7 @@ class head extends htmltagger {
 		}
 		ob_start();
 		$this->buffer = TRUE;
-		echo "\t<head>", PHP_EOL, "\t\t<meta charset=\"UTF-8\">", PHP_EOL;
+		echo "\t<head>", PHP_EOL, "\t\t<meta charset=\"UTF-8\">",PHP_EOL;
 		foreach ($head as $k => $s) {
 			echo "\t\t";
 			$this->$k($s);
@@ -153,20 +177,30 @@ class head extends htmltagger {
 	public function css($css) {
 		$length = count($css);
 		foreach ($css as $k => $s) {
-			echo '<link rel="stylesheet" type="text/css" href="', $s, '">';
+			if (is_string($s)){
+				echo '<link rel="stylesheet" href="', $s, '">';
+			}
+			elseif (is_array($s)){
+				echo '<link rel="stylesheet" ';
+				$return = $this->__exchange($css[$k]);
+				foreach ($return as $config) {
+					echo ' ',$config;
+				}
+				echo '>';
+			}
 			echo ($k < ($length - 1)) ? PHP_EOL . "\t\t" : '';
 		}
 	}
 	public function style($style) {
-		echo PHP_EOL, "\t<style>", PHP_EOL;
+		echo "<style>", PHP_EOL;
 		if (is_array($style)) {
 			foreach ($style as $s) {
-				echo "\t\t$s", PHP_EOL;
+				echo "\t\t\t$s", PHP_EOL;
 			}
 		} else if (is_string($style)) {
 			echo "\t\t$style", PHP_EOL;
 		}
-		echo "\t</style>";
+		echo "\t\t</style>";
 	}
 	public function __prn() {
 		if ($this->buffer) ob_end_flush();
@@ -175,8 +209,8 @@ class head extends htmltagger {
 	}
 	public function __rtn() {
 		$return = ob_get_contents();
-		if ($this->buffer) ob_end_clean();
-		$this->buffet = FALSE;
+		if ($this->buffer) ob_end_flush();
+		$this->buffer = FALSE;
 		return $return;
 	}
 	public function __call($method, $parameters) {
@@ -232,7 +266,7 @@ class body extends htmltagger {
 	public function __rtn() {
 		$return = ob_get_contents();
 		if ($this->buffer) ob_end_clean();
-		$this->buffet = FALSE;
+		$this->buffer = FALSE;
 		return $return;
 	}
 	// __exchange htmltagging array to html tag's parameters
@@ -251,7 +285,7 @@ class body extends htmltagger {
 					//    ['content'=>'what'] -> content="what"
 					//    and we add spage before it or it'll not be able to understand by browser.
 					//    then we put it in an array to return
-					$convert[$k] = " $k=\"$s\"";
+					$convert[$k] = "$k=\"$s\"";
 				}
 			}
 		}
@@ -274,7 +308,7 @@ class body extends htmltagger {
 			$return = $this->__exchange($data);
 			//print all parameters
 			foreach ($return as $config) {
-				echo $config;
+				echo ' ',$config;
 			}
 		}
 		//close prefix
